@@ -21,6 +21,33 @@ bicycle_data_frame <- html_table(table_node)
 
 
 
+- /** Update **/
+- If possible, would it be possible to let me know if I am on the right path with this code, or if there is something I should update to make it work correctly?
+
+
+
+I think the code may be working properly.
+
+url <- "https://en.wikipedia.org/wiki/List_of_bicycle-sharing_systems"
+
+root_node <- read_html(url)
+
+body_node <- html_node(root_node,"body")
+
+p_node <- html_node(body_node, "p")
+
+p_content <- html_text(p_node)
+
+table_node <- html_node(root_node, "table")
+
+bike_data_frame <- html_table(body_node)
+
+bike_data_frame <- html_table(body_node)
+
+names(bike_data_frame ) <- as.matrix(bike_data_frame [1, ])
+
+
+
 <!---
 amcnally89/amcnally89 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 You can click the Preview link to take a look at your changes.
