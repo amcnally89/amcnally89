@@ -1,51 +1,65 @@
 - 👋 Hi, I’m @amcnally89
-- Below you will find the code that I am attempting to use for the R Capstone Project. It appears that the code is not able to correctly pull in the table from the Wikipedia webpage. In addition to reviewing the notes and videos in the Capstone course, I have also reviewed the videos and notes in the HTTP Request and REST API and Web Scraping in R videos in the R Programming Basics for Data Science.
+- Below you will find the code that I am attempting to use for the R Capstone Project. It appears that there is an warning with the test_results_all predict. But the main issue that I am having is with the RSQ and RSME functions.
 
-- library(rvest), library(httr), library(shiny), -library(tidyverse)
+# Dataset URL
+dataset_url <- "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-RP0321EN-SkillsNetwork/labs/datasets/seoul_bike_sharing_converted_normalized.csv"
+bike_sharing_df <- read_csv(dataset_url)
+spec(bike_sharing_df)
 
+bike_sharing_df <- bike_sharing_df %>% 
+                   select(-DATE, -FUNCTIONING_DAY)
 
-url <- "https://en.wikipedia.org/wiki/List_of_bicycle-sharing_systems"
+set.seed(1234)
+bike_data_split <- initial_split(bike_sharing_df,prop = 4/5)
+train_data <- training(bike_data_split)
+test_data <- testing(bike_data_split)
 
-root_node <- read_html(url)
+# Pick linear regression
+lm_model_weather <- linear_reg(mode = "regression") %>%
+  # Set engine
+  set_engine(engine = "lm")
+# Print the linear function
+lm_model_weather 
 
-body_node <- html_node(root_node,"body")
+# Fit the model called `lm_model_weather`
+# RENTED_BIKE_COUNT ~ TEMPERATURE + HUMIDITY + WIND_SPEED + VISIBILITY + DEW_POINT_TEMPERATURE + SOLAR_RADIATION + RAINFALL + SNOWFALL,  with the training data
+train_fit_weather <- lm_model_weather  %>% 
+    fit(RENTED_BIKE_COUNT ~ TEMPERATURE + HUMIDITY + WIND_SPEED + VISIBILITY + DEW_POINT_TEMPERATURE + SOLAR_RADIATION + RAINFALL + SNOWFALL, data = train_data)
+train_fit_weather 
+print(train_fit_weather$fit)
 
-p_node <- html_node(body_node, "p")
+# Fit the model called `lm_model_all`
+# `RENTED_BIKE_COUNT ~ .` means use all other variables except for the response variable
 
-p_content <- html_text(p_node)
+lm_model_all <- linear_reg(mode = "regression") %>%
+  # Set engine
+  set_engine(engine = "lm")
+# Print the linear function
+lm_model_all
 
-table_node <- html_node(root_node, "table")
+train_fit_all <- lm_model_all %>% 
+    fit(RENTED_BIKE_COUNT ~ ., data = train_data)
+train_fit_all 
+print(train_fit_all$fit)
 
-bicycle_data_frame <- html_table(table_node)
+summary(lm_model_all$fit)
 
+# Use predict() function to generate test results for `lm_model_weather` and `lm_model_all`
+# and generate two test results dataframe with a truth column:
 
+test_results_weather <- train_fit_weather %>%
+  predict(new_data = train_data) %>%
+  mutate(truth = train_data$RENTED_BIKE_COUNT)
 
+test_results_all <- train_fit_all %>%
+  predict(new_data = train_data) %>%
+  mutate(truth = train_data$RENTED_BIKE_COUNT)
 
-- /** Update **/
-- If possible, would it be possible to let me know if I am on the right path with this code, or if there is something I should update to make it work correctly?
+rsq_weather <- rsq(test_results_weather)
+rmse_weather <- rmse(test_results_weather)
 
-
-
-I think the code may be working properly.
-
-url <- "https://en.wikipedia.org/wiki/List_of_bicycle-sharing_systems"
-
-root_node <- read_html(url)
-
-body_node <- html_node(root_node,"body")
-
-p_node <- html_node(body_node, "p")
-
-p_content <- html_text(p_node)
-
-table_node <- html_node(root_node, "table")
-
-bike_data_frame <- html_table(body_node)
-
-bike_data_frame <- html_table(body_node)
-
-names(bike_data_frame ) <- as.matrix(bike_data_frame [1, ])
-
+rsq_all <- rsq(test_results_all)
+rmse_all <- rmse(test_results_all)
 
 
 <!---
