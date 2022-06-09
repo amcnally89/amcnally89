@@ -4,7 +4,7 @@
 train_fit_all %>%
      mutate(name = fct_reorder(labels(train_fit_all$fit$coefficients), train_fit_all$fit$coefficients)) %>%
      ggplot( aes(x=fit, y=coefficients)) +
-     geom_bar() + coord_flip() + theme_bw()
+     geom_bar()
 
 
 <!---
